@@ -1,0 +1,20 @@
+export default {
+  id: 'vehicles',
+  title: 'Things That Go',
+  emoji: '🚒',
+  color: '#FF9B71',
+  color2: '#F25C54',
+  intro: 'Beep beep! Things that go!',
+  items: [
+    { id: 'car', name: 'car', emoji: '🚗', sound: 'car', says: 'vroom', phrase: 'The car goes vroom vroom!' },
+    { id: 'bus', name: 'bus', emoji: '🚌', sound: 'bus', says: 'honk honk', phrase: 'The bus goes honk honk!' },
+    { id: 'firetruck', name: 'fire truck', emoji: '🚒', sound: 'firetruck', says: 'woo woo', phrase: 'The fire truck goes woo woo!' },
+    { id: 'train', name: 'train', emoji: '🚂', sound: 'train', says: 'choo choo', phrase: 'The train goes choo choo!' },
+    { id: 'airplane', name: 'airplane', emoji: '✈️', sound: 'airplane', says: 'whoosh', phrase: 'The airplane flies up high. Whoosh!' },
+    { id: 'helicopter', name: 'helicopter', emoji: '🚁', sound: 'helicopter', says: 'chop chop', phrase: 'The helicopter goes chop chop chop!' },
+    { id: 'police', name: 'police car', emoji: '🚓', sound: 'police', says: 'wee woo', phrase: 'The police car goes wee woo!' },
+    { id: 'boat', name: 'boat', emoji: '🚢', sound: 'shiphorn', says: 'toot toot', phrase: 'The big boat goes toot toot!' },
+    { id: 'bike', name: 'bike', emoji: '🚲', sound: 'bikebell', says: 'ring ring', phrase: 'The bike bell goes ring ring!' },
+    { id: 'rocket', name: 'rocket', emoji: '🚀', sound: 'rocket', says: 'blast off', phrase: 'Three, two, one, blast off!' },
+  ],
+};

@@ -1,0 +1,20 @@
+export default {
+  id: 'plants',
+  title: 'Plants & Flowers',
+  emoji: '🌻',
+  color: '#FFB5E8',
+  color2: '#C774E8',
+  intro: "Let's walk in the garden!",
+  items: [
+    { id: 'flower', name: 'flower', emoji: '🌼', sound: 'smell', phrase: 'A pretty flower. Sniff sniff. Mmm!' },
+    { id: 'tree', name: 'tree', emoji: '🌳', sound: 'leaves', phrase: 'A big tree. The leaves go swish swish!' },
+    { id: 'sunflower', name: 'sunflower', emoji: '🌻', sound: 'bees', phrase: 'A tall yellow sunflower. The bees love it! Buzz buzz!' },
+    { id: 'rose', name: 'rose', emoji: '🌹', sound: 'smell', phrase: 'A red rose. Sniff sniff. It smells nice!' },
+    { id: 'cactus', name: 'cactus', emoji: '🌵', sound: 'wind', phrase: 'A cactus lives in the windy desert. Ouch, prickly!' },
+    { id: 'tulip', name: 'tulip', emoji: '🌷', sound: 'smell', phrase: 'A pink tulip. Sniff sniff!' },
+    { id: 'leaf', name: 'leaf', emoji: '🍁', sound: 'wind', phrase: 'A leaf falls down, down, down!' },
+    { id: 'palm', name: 'palm tree', emoji: '🌴', sound: 'waves', phrase: 'A palm tree at the beach!' },
+    { id: 'sprout', name: 'sprout', emoji: '🌱', sound: 'drip', phrase: 'A tiny sprout. Drip drop, water helps it grow!' },
+    { id: 'mushroom', name: 'mushroom', emoji: '🍄', sound: 'rain', phrase: 'Mushrooms pop up when it rains!' },
+  ],
+};

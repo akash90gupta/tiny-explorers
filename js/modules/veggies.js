@@ -1,0 +1,20 @@
+export default {
+  id: 'veggies',
+  title: 'Veggies',
+  emoji: '🥕',
+  color: '#B5E655',
+  color2: '#6AB547',
+  intro: 'Veggies make us strong!',
+  items: [
+    { id: 'carrot', name: 'carrot', emoji: '🥕', sound: 'crunch', phrase: 'An orange carrot. Crunch!' },
+    { id: 'broccoli', name: 'broccoli', emoji: '🥦', sound: 'chips', phrase: 'Broccoli looks like a little tree! Crunch!' },
+    { id: 'corn', name: 'corn', emoji: '🌽', sound: 'popcorn', phrase: 'Yellow corn makes popcorn! Pop pop pop!' },
+    { id: 'tomato', name: 'tomato', emoji: '🍅', sound: 'bite', phrase: 'A round red tomato!' },
+    { id: 'potato', name: 'potato', emoji: '🥔', sound: 'plop', phrase: 'A bumpy brown potato! Plop!' },
+    { id: 'cucumber', name: 'cucumber', emoji: '🥒', sound: 'crunch', phrase: 'A long green cucumber. Crunch!' },
+    { id: 'pepper', name: 'pepper', emoji: '🫑', sound: 'crunch', phrase: 'A green pepper!' },
+    { id: 'onion', name: 'onion', emoji: '🧅', sound: 'sniff', phrase: 'An onion. Sniff sniff!' },
+    { id: 'avocado', name: 'avocado', emoji: '🥑', sound: 'bite', phrase: 'An avocado has a big seed inside!' },
+    { id: 'lettuce', name: 'lettuce', emoji: '🥬', sound: 'chips', phrase: 'Leafy green lettuce. Crunch!' },
+  ],
+};

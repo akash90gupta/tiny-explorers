@@ -1,0 +1,20 @@
+export default {
+  id: 'ocean',
+  title: 'Ocean Friends',
+  emoji: '🐳',
+  color: '#4DD8E0',
+  color2: '#1B98E0',
+  intro: "Let's dive under the sea!",
+  items: [
+    { id: 'fish', name: 'fish', emoji: '🐟', sound: 'bubbles', phrase: 'The fish goes blub blub blub!' },
+    { id: 'whale', name: 'whale', emoji: '🐳', sound: 'whale', phrase: 'The big whale sings a song!' },
+    { id: 'dolphin', name: 'dolphin', emoji: '🐬', sound: 'dolphin', phrase: 'The dolphin clicks and whistles!' },
+    { id: 'octopus', name: 'octopus', emoji: '🐙', sound: 'bigbubble', phrase: 'The octopus has eight arms! Blub blub!' },
+    { id: 'crab', name: 'crab', emoji: '🦀', sound: 'plop', phrase: 'The crab walks sideways on the sand!' },
+    { id: 'turtle', name: 'turtle', emoji: '🐢', sound: 'splash', phrase: 'The turtle swims slowly. Splash!' },
+    { id: 'shark', name: 'shark', emoji: '🦈', sound: 'bite', phrase: 'The shark swims fast! Chomp chomp!' },
+    { id: 'seal', name: 'seal', emoji: '🦭', sound: 'seal', says: 'ork ork', phrase: 'The seal says ork ork!' },
+    { id: 'pufferfish', name: 'puffer fish', emoji: '🐡', sound: 'blop', phrase: 'The puffer fish puffs up big! Pop!' },
+    { id: 'shell', name: 'shell', emoji: '🐚', sound: 'waves', phrase: 'Hold the shell up and hear the waves!' },
+  ],
+};

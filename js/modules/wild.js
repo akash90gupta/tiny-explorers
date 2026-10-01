@@ -1,0 +1,20 @@
+export default {
+  id: 'wild',
+  title: 'Wild Animals',
+  emoji: '🦁',
+  color: '#8BD450',
+  color2: '#3FA34D',
+  intro: "Let's go on a safari!",
+  items: [
+    { id: 'lion', name: 'lion', emoji: '🦁', sound: 'lion', says: 'roar', phrase: 'The lion says roar!' },
+    { id: 'elephant', name: 'elephant', emoji: '🐘', sound: 'elephant', says: 'toot', phrase: 'The elephant goes toot with its trunk!' },
+    { id: 'monkey', name: 'monkey', emoji: '🐒', sound: 'monkey', says: 'ooh ooh aah aah', phrase: 'The monkey says ooh ooh aah aah!' },
+    { id: 'snake', name: 'snake', emoji: '🐍', sound: 'snake', says: 'hiss', phrase: 'The snake says hiss!' },
+    { id: 'frog', name: 'frog', emoji: '🐸', sound: 'frog', says: 'ribbit', phrase: 'The frog says ribbit!' },
+    { id: 'bear', name: 'bear', emoji: '🐻', sound: 'bear', says: 'grr', phrase: 'The bear says grrr!' },
+    { id: 'tiger', name: 'tiger', emoji: '🐅', sound: 'tiger', says: 'grr', phrase: 'The tiger has stripes. Grrr!' },
+    { id: 'wolf', name: 'wolf', emoji: '🐺', sound: 'wolf', says: 'awoo', phrase: 'The wolf says awooo!' },
+    { id: 'giraffe', name: 'giraffe', emoji: '🦒', sound: 'giraffe', phrase: 'The giraffe is so tall! It hums very softly. Hmmm.' },
+    { id: 'zebra', name: 'zebra', emoji: '🦓', sound: 'zebra', phrase: 'The zebra has black and white stripes!' },
+  ],
+};

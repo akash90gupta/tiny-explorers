@@ -1,0 +1,20 @@
+export default {
+  id: 'birds',
+  title: 'Birds',
+  emoji: '🦜',
+  color: '#5BC0EB',
+  color2: '#2E86DE',
+  intro: "Let's listen to the birds!",
+  items: [
+    { id: 'bird', name: 'bird', emoji: '🐦', sound: 'bird', says: 'tweet tweet', phrase: 'The little bird says tweet tweet!' },
+    { id: 'owl', name: 'owl', emoji: '🦉', sound: 'owl', says: 'hoo hoo', phrase: 'The owl says hoo hoo!' },
+    { id: 'parrot', name: 'parrot', emoji: '🦜', sound: 'parrot', says: 'squawk', phrase: 'The parrot says squawk! Hello!' },
+    { id: 'chick', name: 'chick', emoji: '🐤', sound: 'chick', says: 'peep peep', phrase: 'The baby chick says peep peep!' },
+    { id: 'penguin', name: 'penguin', emoji: '🐧', sound: 'penguin', phrase: 'The penguin waddles on the ice and calls to its friends!' },
+    { id: 'eagle', name: 'eagle', emoji: '🦅', sound: 'eagle', says: 'screech', phrase: 'The eagle flies high in the sky!' },
+    { id: 'swan', name: 'swan', emoji: '🦢', sound: 'swan', says: 'honk', phrase: 'The swan swims on the lake. Honk!' },
+    { id: 'flamingo', name: 'flamingo', emoji: '🦩', sound: 'flamingo', phrase: 'The pink flamingo stands on one leg and honks!' },
+    { id: 'peacock', name: 'peacock', emoji: '🦚', sound: 'peacock', phrase: 'The peacock has beautiful feathers!' },
+    { id: 'turkey', name: 'turkey', emoji: '🦃', sound: 'turkey', says: 'gobble gobble', phrase: 'The turkey says gobble gobble!' },
+  ],
+};

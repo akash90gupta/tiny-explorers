@@ -1,0 +1,20 @@
+export default {
+  id: 'farm',
+  title: 'Farm Animals',
+  emoji: '🐄',
+  color: '#FFC94D',
+  color2: '#FF9F1C',
+  intro: "Let's meet the farm animals!",
+  items: [
+    { id: 'cow', name: 'cow', emoji: '🐄', sound: 'cow', says: 'moo', phrase: 'The cow says moo!' },
+    { id: 'pig', name: 'pig', emoji: '🐖', sound: 'pig', says: 'oink', phrase: 'The pig says oink oink!' },
+    { id: 'sheep', name: 'sheep', emoji: '🐑', sound: 'sheep', says: 'baa', phrase: 'The sheep says baa!' },
+    { id: 'dog', name: 'dog', emoji: '🐕', sound: 'dog', says: 'woof', phrase: 'The dog says woof woof!' },
+    { id: 'cat', name: 'cat', emoji: '🐈', sound: 'cat', says: 'meow', phrase: 'The cat says meow!' },
+    { id: 'duck', name: 'duck', emoji: '🦆', sound: 'duck', says: 'quack', phrase: 'The duck says quack quack!' },
+    { id: 'horse', name: 'horse', emoji: '🐎', sound: 'horse', says: 'neigh', phrase: 'The horse says neigh!' },
+    { id: 'chicken', name: 'chicken', emoji: '🐔', sound: 'chicken', says: 'cluck cluck', phrase: 'The chicken says cluck cluck!' },
+    { id: 'rooster', name: 'rooster', emoji: '🐓', sound: 'rooster', says: 'cock-a-doodle-doo', phrase: 'The rooster says cock-a-doodle-doo!' },
+    { id: 'goat', name: 'goat', emoji: '🐐', sound: 'goat', says: 'meh', phrase: 'The goat says meh-eh-eh!' },
+  ],
+};

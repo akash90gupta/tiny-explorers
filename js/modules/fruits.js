@@ -1,0 +1,20 @@
+export default {
+  id: 'fruits',
+  title: 'Fruits',
+  emoji: '🍎',
+  color: '#FF7A8A',
+  color2: '#E63946',
+  intro: 'Yummy fruits!',
+  items: [
+    { id: 'apple', name: 'apple', emoji: '🍎', sound: 'applebite', phrase: 'A red apple. Crunch crunch!' },
+    { id: 'banana', name: 'banana', emoji: '🍌', sound: 'bite', phrase: 'A yellow banana. Monkeys love bananas! Yum!' },
+    { id: 'strawberry', name: 'strawberry', emoji: '🍓', sound: 'bite', phrase: 'A sweet red strawberry. Yum yum!' },
+    { id: 'orange', name: 'orange', emoji: '🍊', sound: 'slurp', phrase: 'An orange orange. So juicy! Slurp!' },
+    { id: 'grapes', name: 'grapes', emoji: '🍇', sound: 'blop', plural: true, phrase: 'Purple grapes. Pop pop!' },
+    { id: 'watermelon', name: 'watermelon', emoji: '🍉', sound: 'bite', phrase: 'Watermelon is green outside and red inside! Yum!' },
+    { id: 'pear', name: 'pear', emoji: '🍐', sound: 'crunch', phrase: 'A green pear. Crunch!' },
+    { id: 'cherries', name: 'cherries', emoji: '🍒', sound: 'blop', plural: true, phrase: 'Two little red cherries!' },
+    { id: 'pineapple', name: 'pineapple', emoji: '🍍', sound: 'bite', phrase: 'A spiky pineapple. So sweet!' },
+    { id: 'blueberries', name: 'blueberries', emoji: '🫐', sound: 'blop', plural: true, phrase: 'Tiny blue blueberries!' },
+  ],
+};
