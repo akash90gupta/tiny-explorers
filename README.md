@@ -1,5 +1,7 @@
 # Tiny Explorers
 
+[![Tiny Explorers: a first-words game for toddlers, shown on an iPad asking "Where is the cow?" and on a phone with the 10 themes](docs/banner.png)](https://akash90gupta.github.io/tiny-explorers/)
+
 **A first-words game for toddlers.** Big pictures, real animal sounds, and a quiz that adapts to one child: "Where is the cow?" Tap it, hear the moo, get confetti.
 
 **▶ Play it: [akash90gupta.github.io/tiny-explorers](https://akash90gupta.github.io/tiny-explorers/)**
