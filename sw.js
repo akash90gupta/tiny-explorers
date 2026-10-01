@@ -1,9 +1,9 @@
 // Offline support. Network first so updates show up right away, cache as the
 // fallback so the app still works on a plane or with Wi-Fi off.
-const CACHE = 'tiny-explorers-v3';
+const CACHE = 'tiny-explorers-v4';
 const SHELL = [
   './', 'index.html', 'css/styles.css', 'manifest.webmanifest',
-  'js/app.js', 'js/audio.js', 'js/learner.js', 'js/confetti.js', 'js/diagnostics.js',
+  'js/app.js', 'js/audio.js', 'js/learner.js', 'js/confetti.js', 'js/diagnostics.js', 'js/i18n.js',
   'js/modules/index.js', 'js/modules/farm.js', 'js/modules/wild.js', 'js/modules/birds.js',
   'js/modules/ocean.js', 'js/modules/fruits.js', 'js/modules/veggies.js', 'js/modules/plants.js',
   'js/modules/vehicles.js', 'js/modules/colors.js', 'js/modules/body.js',

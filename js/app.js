@@ -3,11 +3,11 @@ import * as audio from './audio.js';
 import * as L from './learner.js';
 import { burst, rain } from './confetti.js';
 import * as diag from './diagnostics.js';
+import { t, say, loc, nameOf, getLang, setLang, LANGS, locale } from './i18n.js';
 
 const DEBUG = new URLSearchParams(location.search).has('debug');
 
 const app = document.getElementById('app');
-const PRAISE = ['Yes!', 'Great job!', 'You found it!', 'Hooray!', 'Super!', 'Wow, yes!'];
 const IDLE_MS = 9000;
 // Start-screen picture positions [left%, top%], kept around the edges so they never cover the title.
 const FLOAT_AT = [[5, 8], [8, 42], [6, 76], [22, 88], [30, 10], [66, 9], [78, 86], [90, 16], [91, 52], [86, 74]];
@@ -17,11 +17,16 @@ let quiz = null;
 let timers = [];
 
 audio.configure(L.getSettings());
+applyLang(L.getSettings().lang);
+
+function applyLang(lang) {
+  setLang(lang);
+  audio.setSpeechLang(getLang());
+  document.title = t('appName');
+}
 
 // ---------- Helpers ----------
 
-const pick = (a) => a[Math.floor(Math.random() * a.length)];
-const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const pct = (x) => Math.round(x * 100);
 
 function shuffle(a) {
@@ -61,15 +66,17 @@ function visual(it) {
     : `<span class="emoji">${it.emoji}</span>`;
 }
 
-// Sentence builders. Modules can override with `ask` and `noArticle`.
-const the = (m, it) => (m.noArticle ? it.name : `the ${it.name}`);
-const askText = (m, it) => (m.ask ? m.ask(it) : `${it.plural ? 'Where are' : 'Where is'} the ${it.name}?`);
-const thatsText = (m, it) => (m.noArticle ? `That's ${it.name}.` : it.plural ? `Those are the ${it.name}.` : `That's the ${it.name}.`);
-const yesText = (m, it) => `${pick(PRAISE)} ${cap(the(m, it))}!`;
+// Sentences live in i18n.js because word order differs between languages.
+const title = (m) => loc(m, 'title');
 
-function backBtn(action, label = 'Back') {
-  return `<button class="icon-btn hold-btn" data-action="${action}" data-hold aria-label="${label}">
-    <span aria-hidden="true">⬅️</span><small class="hold-tip">hold</small></button>`;
+// The language switch. A plain tap: switching is harmless, even for a toddler.
+function langBtn(extra = '') {
+  return `<button class="pill-btn lang-btn ${extra}" data-action="toggleLang" aria-label="${t('switchToLabel')}" lang="${getLang() === 'en' ? 'hi' : 'en'}">${t('switchTo')}</button>`;
+}
+
+function backBtn(action) {
+  return `<button class="icon-btn hold-btn" data-action="${action}" data-hold aria-label="${t('back')}">
+    <span aria-hidden="true">⬅️</span><small class="hold-tip">${t('hold')}</small></button>`;
 }
 
 function starRow(n, of = 3) {
@@ -82,11 +89,11 @@ const SCREENS = {
   oops() {
     return `<section class="screen oops">
       <div class="trophy" aria-hidden="true">🛟</div>
-      <h2 class="done-title">Oops, something broke</h2>
-      <p class="done-score">Tap the big button and we'll get going again.</p>
+      <h2 class="done-title">${t('oopsTitle')}</h2>
+      <p class="done-score">${t('oopsNote')}</p>
       <div class="done-actions">
-        <button class="pill-btn play big" data-action="fixIt">🔧 Fix it</button>
-        <button class="pill-btn big" data-action="copyReport">📋 Copy error report</button>
+        <button class="pill-btn play big" data-action="fixIt">${t('fixIt')}</button>
+        <button class="pill-btn big" data-action="copyReport">${t('copyReport')}</button>
       </div>
       <textarea class="report-text" hidden readonly></textarea>
     </section>`;
@@ -96,25 +103,29 @@ const SCREENS = {
     const floaters = ['🐄', '🦁', '🦜', '🐳', '🍎', '🥕', '🌻', '🚒', '🎨', '👃'];
     return `<section class="screen start">
       <div class="floaters" aria-hidden="true">${floaters.map((e, i) => `<span style="--i:${i};left:${FLOAT_AT[i][0]}%;top:${FLOAT_AT[i][1]}%">${e}</span>`).join('')}</div>
-      <h1 class="logo"><span>Tiny</span><span>Explorers</span></h1>
-      <button class="big-play" data-action="begin" aria-label="Start">▶</button>
-      <p class="start-hint">Tap to play · turn the sound on 🔊</p>
+      ${langBtn('corner')}
+      <h1 class="logo"><span>${t('logoTop')}</span><span>${t('logoBottom')}</span></h1>
+      <button class="big-play" data-action="begin" aria-label="${t('start')}">▶</button>
+      <p class="start-hint">${t('startHint')}</p>
     </section>`;
   },
 
   home() {
     return `<section class="screen home">
       <header class="topbar">
-        <div class="brand">🧭 Tiny Explorers</div>
-        <button class="icon-btn hold-btn" data-action="parent" data-hold="always" aria-label="Grown-ups (hold)">
-          <span aria-hidden="true">👪</span><small class="hold-tip">grown-ups: hold</small></button>
+        <div class="brand">🧭 ${t('appName')}</div>
+        <div class="top-actions">
+          ${langBtn()}
+          <button class="icon-btn hold-btn" data-action="parent" data-hold="always" aria-label="${t('grownUpsLabel')}">
+            <span aria-hidden="true">👪</span><small class="hold-tip">${t('grownUpsHold')}</small></button>
+        </div>
       </header>
       <div class="module-grid scroll">
         ${MODULES.map((m) => {
           const ms = L.modState(m);
           return `<button class="module-tile" style="--c:${m.color};--c2:${m.color2}" data-action="open" data-id="${m.id}">
             <span class="tile-emoji">${m.emoji}</span>
-            <span class="tile-title">${m.title}</span>
+            <span class="tile-title">${title(m)}</span>
             <span class="tile-meta"><span class="tile-stars">⭐ ${ms.stars}</span>
               <span class="meter"><i style="width:${pct(L.moduleMastery(m))}%"></i></span></span>
           </button>`;
@@ -128,19 +139,19 @@ const SCREENS = {
     return `<section class="screen module" style="--c:${m.color};--c2:${m.color2}">
       <header class="topbar">
         ${backBtn('home')}
-        <h2 class="screen-title">${m.emoji} ${m.title}</h2>
+        <h2 class="screen-title">${m.emoji} ${title(m)}</h2>
         <div class="top-actions">
-          <button class="pill-btn listen" data-action="listen">👂 Listen</button>
-          <button class="pill-btn play" data-action="play">🎯 Play</button>
+          <button class="pill-btn listen" data-action="listen">${t('listen')}</button>
+          <button class="pill-btn play" data-action="play">${t('play')}</button>
         </div>
       </header>
       <div class="item-grid scroll">
         ${m.items.map((it) => {
           const known = L.itemState(it).pk >= 0.85;
-          return `<button class="item-card" data-action="learn" data-id="${it.id}" aria-label="${it.name}">
+          return `<button class="item-card" data-action="learn" data-id="${it.id}" aria-label="${loc(it, 'name')}">
             <span class="item-visual">${visual(it)}</span>
-            <span class="item-name">${it.name}</span>
-            ${known ? '<span class="badge" title="Knows it">⭐</span>' : ''}
+            <span class="item-name">${loc(it, 'name')}</span>
+            ${known ? `<span class="badge" title="${t('knowsIt')}">⭐</span>` : ''}
           </button>`;
         }).join('')}
       </div>
@@ -149,18 +160,18 @@ const SCREENS = {
 
   quiz() {
     const { mod, q } = quiz;
-    const prompt = q.mode === 'sound' ? `Who says “${q.target.says}”?` : askText(mod, q.target);
+    const prompt = q.mode === 'sound' ? say.whoSays(q.target) : say.ask(mod, q.target);
     return `<section class="screen quiz" style="--c:${mod.color};--c2:${mod.color2}">
       <header class="topbar">
         ${backBtn('module')}
         <div class="dots">${dotsHtml()}</div>
         <span class="topbar-spacer"></span>
       </header>
-      <button class="prompt" data-action="replay" aria-label="Hear it again">
+      <button class="prompt" data-action="replay" aria-label="${t('hearAgain')}">
         <span class="prompt-ear" aria-hidden="true">🔊</span><span class="prompt-text">${prompt}</span>
       </button>
       <div class="choices" data-n="${q.choices.length}">
-        ${q.choices.map((c) => `<button class="choice" data-action="answer" data-id="${c.id}" aria-label="${c.name}">${visual(c)}</button>`).join('')}
+        ${q.choices.map((c) => `<button class="choice" data-action="answer" data-id="${c.id}" aria-label="${loc(c, 'name')}">${visual(c)}</button>`).join('')}
       </div>
     </section>`;
   },
@@ -169,53 +180,54 @@ const SCREENS = {
     const m = getModule(id);
     return `<section class="screen done" style="--c:${m.color};--c2:${m.color2}">
       <div class="trophy" aria-hidden="true">🏆</div>
-      <h2 class="done-title">Great job!</h2>
+      <h2 class="done-title">${t('greatJob')}</h2>
       <div class="done-stars">${starRow(stars)}</div>
-      <p class="done-score">${correct} of ${total} on the first try</p>
-      ${unlocked ? `<div class="unlock"><span class="unlock-label">New!</span><span class="unlock-visual">${visual(unlocked)}</span><span class="unlock-name">${unlocked.name}</span></div>` : ''}
+      <p class="done-score">${t('firstTry', { correct, total })}</p>
+      ${unlocked ? `<div class="unlock"><span class="unlock-label">${t('newBadge')}</span><span class="unlock-visual">${visual(unlocked)}</span><span class="unlock-name">${loc(unlocked, 'name')}</span></div>` : ''}
       <div class="done-actions">
-        <button class="pill-btn play big" data-action="play">🔁 Again</button>
-        <button class="pill-btn big" data-action="module">📚 ${m.title}</button>
-        <button class="pill-btn big" data-action="home">🏠 Home</button>
+        <button class="pill-btn play big" data-action="play">${t('again')}</button>
+        <button class="pill-btn big" data-action="module">📚 ${title(m)}</button>
+        <button class="pill-btn big" data-action="home">${t('homeBtn')}</button>
       </div>
     </section>`;
   },
 
   parent() {
     const s = L.getSettings();
-    const t = L.totals(MODULES);
+    const tot = L.totals(MODULES);
     const confusions = L.topConfusions();
-    const recent = t.sessions.slice(-8).reverse();
+    const recent = tot.sessions.slice(-8).reverse();
+    const hiVoiceMissing = getLang() === 'hi' && !audio.hasVoice('hi');
     const opt = (key, vals, labels = vals) => vals.map((v, i) => `<option value="${v}" ${s[key] == v ? 'selected' : ''}>${labels[i]}</option>`).join('');
     return `<section class="screen parent scroll">
       <header class="topbar">
         ${backBtn('home')}
-        <h2 class="screen-title">👪 Grown-ups</h2>
+        <h2 class="screen-title">${t('grownUps')}</h2>
         <span class="topbar-spacer"></span>
       </header>
 
       <div class="stat-row">
-        <div class="stat"><b>${t.mastered}<small>/${t.totalItems}</small></b><span>words known</span></div>
-        <div class="stat"><b>${t.attempts ? pct(t.accuracy) + '%' : '–'}</b><span>first-try accuracy</span></div>
-        <div class="stat"><b>${t.rounds}</b><span>rounds played</span></div>
-        <div class="stat"><b>${t.stars}</b><span>stars earned</span></div>
+        <div class="stat"><b>${tot.mastered}<small>/${tot.totalItems}</small></b><span>${t('wordsKnown')}</span></div>
+        <div class="stat"><b>${tot.attempts ? pct(tot.accuracy) + '%' : '–'}</b><span>${t('accuracy')}</span></div>
+        <div class="stat"><b>${tot.rounds}</b><span>${t('roundsPlayed')}</span></div>
+        <div class="stat"><b>${tot.stars}</b><span>${t('starsEarned')}</span></div>
       </div>
 
-      <h3>Progress by theme</h3>
-      <p class="muted">A star badge means the learning engine is 85%+ confident he knows it. Faded items aren't in the quiz yet. They unlock as he masters the ones before them.</p>
+      <h3>${t('progressByTheme')}</h3>
+      <p class="muted">${t('progressNote')}</p>
       <div class="mod-progress">
         ${MODULES.map((m) => {
           const ms = L.modState(m);
           return `<div class="mod-card" style="--c:${m.color};--c2:${m.color2}">
-            <div class="mod-head"><span class="mod-emoji">${m.emoji}</span><b>${m.title}</b>
+            <div class="mod-head"><span class="mod-emoji">${m.emoji}</span><b>${title(m)}</b>
               <span class="mod-pct">${pct(L.moduleMastery(m))}%</span></div>
             <div class="meter wide"><i style="width:${pct(L.moduleMastery(m))}%"></i></div>
-            <div class="mod-sub">⭐ ${ms.stars} · ${ms.rounds} rounds · ${ms.answered ? pct(ms.firstTry / ms.answered) : 0}% first try · quizzing ${ms.unlocked}/${m.items.length}</div>
+            <div class="mod-sub">${t('modSub', { stars: ms.stars, rounds: ms.rounds, pct: ms.answered ? pct(ms.firstTry / ms.answered) : 0, unlocked: ms.unlocked, total: m.items.length })}</div>
             <div class="chips">
               ${m.items.map((it, i) => {
                 const st = L.itemState(it);
                 const lvl = L.masteryLabel(st.pk);
-                return `<div class="chip ${lvl} ${i >= ms.unlocked ? 'locked' : ''}" title="${it.name}: ${pct(st.pk)}% · ${st.correct}/${st.attempts} correct · seen ${st.seen}x">
+                return `<div class="chip ${lvl} ${i >= ms.unlocked ? 'locked' : ''}" title="${t('chipTitle', { name: loc(it, 'name'), pct: pct(st.pk), correct: st.correct, attempts: st.attempts, seen: st.seen })}">
                   <span class="chip-visual">${visual(it)}</span>
                   <span class="chip-bar"><i style="width:${pct(st.pk)}%"></i></span>
                 </div>`;
@@ -227,62 +239,58 @@ const SCREENS = {
 
       <div class="two-col">
         <div class="panel">
-          <h3>Common mix-ups</h3>
+          <h3>${t('mixups')}</h3>
           ${confusions.length ? `<ul class="mixups">${confusions.map((c) => {
             const a = itemByKey(c.target), b = itemByKey(c.chosen);
             if (!a || !b) return '';
-            return `<li><span>${visual(a)}</span><span class="mix-arrow">picked</span><span>${visual(b)}</span><span class="muted">${c.count}×</span></li>`;
-          }).join('')}</ul><p class="muted small">These show up more often as wrong choices, so he gets practice telling them apart.</p>` : '<p class="muted">No mix-ups yet.</p>'}
+            return `<li><span>${visual(a)}</span><span class="mix-arrow">${t('picked')}</span><span>${visual(b)}</span><span class="muted">${c.count}×</span></li>`;
+          }).join('')}</ul><p class="muted small">${t('mixupsNote')}</p>` : `<p class="muted">${t('noMixups')}</p>`}
         </div>
         <div class="panel">
-          <h3>Recent rounds</h3>
+          <h3>${t('recent')}</h3>
           ${recent.length ? `<ul class="recent">${recent.map((r) => {
             const m = getModule(r.mod);
             const d = new Date(r.t);
-            return `<li><span>${m ? m.emoji : ''} ${m ? m.title : r.mod}</span><span>${r.correct}/${r.total}</span><span class="muted">${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} ${d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span></li>`;
-          }).join('')}</ul>` : '<p class="muted">No rounds yet.</p>'}
+            return `<li><span>${m ? m.emoji : ''} ${m ? title(m) : r.mod}</span><span>${r.correct}/${r.total}</span><span class="muted">${d.toLocaleDateString(locale(), { month: 'short', day: 'numeric' })} ${d.toLocaleTimeString(locale(), { hour: 'numeric', minute: '2-digit' })}</span></li>`;
+          }).join('')}</ul>` : `<p class="muted">${t('noRounds')}</p>`}
         </div>
       </div>
 
-      <h3>Settings</h3>
+      <h3>${t('settings')}</h3>
       <div class="settings panel">
-        <label class="setting"><span>Spoken words</span><input type="checkbox" data-setting="voice" ${s.voice ? 'checked' : ''}></label>
-        <label class="setting"><span>Animal and fun sounds</span><input type="checkbox" data-setting="sounds" ${s.sounds ? 'checked' : ''}></label>
-        <label class="setting"><span>Volume</span><input type="range" min="0.1" max="1" step="0.05" value="${s.volume}" data-setting="volume"></label>
-        <label class="setting"><span>Most choices per question</span><select data-setting="maxChoices">${opt('maxChoices', [2, 3, 4])}</select></label>
-        <label class="setting"><span>Questions per round</span><select data-setting="roundLength">${opt('roundLength', [3, 5, 8])}</select></label>
-        <label class="setting"><span>Toddler lock (hold ⬅️ to go back)</span><input type="checkbox" data-setting="toddlerLock" ${s.toddlerLock ? 'checked' : ''}></label>
-        <label class="setting"><span>Repeat the question if he goes quiet</span><input type="checkbox" data-setting="idleHints" ${s.idleHints ? 'checked' : ''}></label>
-        <button class="pill-btn" data-action="testSound">🔊 Test sound</button>
+        <label class="setting"><span>${t('language')}</span><select data-setting="lang">${opt('lang', Object.keys(LANGS), Object.values(LANGS).map((l) => l.label))}</select></label>
+        ${hiVoiceMissing ? `<p class="voice-warning">${t('noHindiVoice')}</p>` : ''}
+        <label class="setting"><span>${t('sVoice')}</span><input type="checkbox" data-setting="voice" ${s.voice ? 'checked' : ''}></label>
+        <label class="setting"><span>${t('sSounds')}</span><input type="checkbox" data-setting="sounds" ${s.sounds ? 'checked' : ''}></label>
+        <label class="setting"><span>${t('sVolume')}</span><input type="range" min="0.1" max="1" step="0.05" value="${s.volume}" data-setting="volume"></label>
+        <label class="setting"><span>${t('sChoices')}</span><select data-setting="maxChoices">${opt('maxChoices', [2, 3, 4])}</select></label>
+        <label class="setting"><span>${t('sRound')}</span><select data-setting="roundLength">${opt('roundLength', [3, 5, 8])}</select></label>
+        <label class="setting"><span>${t('sLock')}</span><input type="checkbox" data-setting="toddlerLock" ${s.toddlerLock ? 'checked' : ''}></label>
+        <label class="setting"><span>${t('sIdle')}</span><input type="checkbox" data-setting="idleHints" ${s.idleHints ? 'checked' : ''}></label>
+        <button class="pill-btn" data-action="testSound">${t('testSound')}</button>
       </div>
 
-      <h3>Problems</h3>
+      <h3>${t('problems')}</h3>
       <div class="panel">
-        <p class="muted">If a screen freezes or a sound won't play, it's logged here. Copy the report to share it.</p>
+        <p class="muted">${t('problemsNote')}</p>
         ${problemsHtml(8)}
         <div class="row-actions">
-          <button class="pill-btn" data-action="copyReport">📋 Copy error report</button>
-          <button class="pill-btn" data-action="fixIt">🔧 Restart sound</button>
-          <button class="pill-btn" data-action="clearProblems">Clear log</button>
+          <button class="pill-btn" data-action="copyReport">${t('copyReport')}</button>
+          <button class="pill-btn" data-action="fixIt">${t('restartSound')}</button>
+          <button class="pill-btn" data-action="clearProblems">${t('clearLog')}</button>
         </div>
         <textarea class="report-text" hidden readonly></textarea>
       </div>
 
       <details class="panel how">
-        <summary>How the learning engine works</summary>
+        <summary>${t('howTitle')}</summary>
         <ul>
-          <li><b>Knowledge tracing.</b> Each word keeps a probability that he knows it (Bayesian Knowledge Tracing). Only first-try answers count as evidence, and a correct pick out of 2 counts less than one out of 4, because guessing is easier.</li>
-          <li><b>Smart practice.</b> The next question favors words he knows least and words he hasn't seen in a while.</li>
-          <li><b>Gradual unlocks.</b> Each theme starts with 3 words. A new one joins the quiz once he averages 60% on the current set.</li>
-          <li><b>Adaptive difficulty.</b> 2 pictures while learning, then 3, then 4 (capped by the setting above).</li>
-          <li><b>Mix-up aware.</b> If he confuses two things, they're paired up more often until the mix-up fades.</li>
-          <li><b>Gentle hints.</b> After 2 misses, or if he goes quiet, the right answer gently glows.</li>
-          <li><b>Private.</b> Progress stays on this device. No accounts, no tracking, nothing sent anywhere.</li>
+          ${t('how').map(([head, body]) => `<li><b>${head}</b> ${body}</li>`).join('')}
         </ul>
       </details>
 
       <div class="danger">
-        <button class="pill-btn danger-btn" data-action="askReset">Reset all progress</button>
+        <button class="pill-btn danger-btn" data-action="askReset">${t('resetAll')}</button>
       </div>
     </section>`;
   },
@@ -293,7 +301,7 @@ const ENTER = {
   module({ id }) {
     const m = getModule(id);
     audio.preload(m.items.map((i) => i.sound));
-    audio.sequence([() => audio.speak(m.intro)]);
+    audio.sequence([() => audio.speak(loc(m, 'intro'))]);
   },
   quiz() {
     later(askPrompt, 350);
@@ -302,9 +310,9 @@ const ENTER = {
   done({ stars, unlocked, id }) {
     const m = getModule(id);
     rain();
-    const steps = [() => audio.sfx('cheer'), () => audio.speak(stars === 3 ? 'Hooray! Three stars! Great job!' : 'Hooray! Great job!')];
+    const steps = [() => audio.sfx('cheer'), () => audio.speak(stars === 3 ? t('cheer3') : t('cheer'))];
     if (unlocked) {
-      steps.push(() => audio.wait(300), () => audio.speak(`Now let's learn ${the(m, unlocked)}!`), () => audio.playItemSound(unlocked));
+      steps.push(() => audio.wait(300), () => audio.speak(say.unlock(m, unlocked)), () => audio.playItemSound(unlocked));
     }
     audio.sequence(steps);
   },
@@ -335,8 +343,8 @@ function go(screen, params = {}, cause = navCause) {
 function helpButton() {
   const n = diag.unseen();
   if (!n || current.screen === 'start') return '';
-  return `<button class="help-btn" data-action="openHelp" aria-label="Something went wrong. Tap to fix.">
-    <span aria-hidden="true">🛟</span> Fix a problem <b>${n}</b></button>`;
+  return `<button class="help-btn" data-action="openHelp" aria-label="${t('fixLabel')}">
+    <span aria-hidden="true">🛟</span> ${t('fixProblem')} <b>${n}</b></button>`;
 }
 
 function refreshHelp() {
@@ -349,8 +357,8 @@ diag.onError(() => setTimeout(refreshHelp, 0));
 
 function problemsHtml(limit = 5) {
   const errs = diag.errors().slice(-limit).reverse();
-  if (!errs.length) return '<p class="muted">No problems logged. Everything is working.</p>';
-  return `<ul class="problems">${errs.map((e) => `<li><b>${esc(e.where)}</b><span>${esc(e.message)}</span><small class="muted">${new Date(e.t).toLocaleString()}</small></li>`).join('')}</ul>`;
+  if (!errs.length) return `<p class="muted">${t('noProblems')}</p>`;
+  return `<ul class="problems">${errs.map((e) => `<li><b>${esc(e.where)}</b><span>${esc(e.message)}</span><small class="muted">${new Date(e.t).toLocaleString(locale())}</small></li>`).join('')}</ul>`;
 }
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -359,12 +367,12 @@ async function copyReport(btn) {
   const text = diag.asText();
   try {
     await navigator.clipboard.writeText(text);
-    if (btn) btn.textContent = '✅ Copied';
+    if (btn) btn.textContent = t('copied');
   } catch {
     // Older iPads or non-https: show the text so it can be selected by hand.
     const box = app.querySelector('.report-text');
     if (box) { box.hidden = false; box.value = text; box.focus(); box.select(); }
-    if (btn) btn.textContent = 'Select the text below and copy it';
+    if (btn) btn.textContent = t('selectToCopy');
   }
 }
 
@@ -426,8 +434,8 @@ function askPrompt() {
   if (current.screen !== 'quiz' || !quiz?.q || quiz.q.locked) return;
   const { mod, q } = quiz;
   const steps = q.mode === 'sound'
-    ? [() => audio.speak(`Who says ${q.target.says}?`), () => audio.playItemSound(q.target)]
-    : [() => audio.speak(askText(mod, q.target))];
+    ? [() => audio.speak(say.whoSaysSpoken(q.target)), () => audio.playItemSound(q.target)]
+    : [() => audio.speak(say.ask(mod, q.target))];
   audio.sequence(steps);
 }
 
@@ -464,7 +472,7 @@ function answer(el) {
     burst(...center(el), 45);
     audio.sequence([
       () => audio.sfx('success'),
-      () => audio.speak(yesText(mod, q.target)),
+      () => audio.speak(say.yes(mod, q.target)),
       () => audio.playItemSound(q.target),
       () => audio.wait(400),
     ]).then((ok) => {
@@ -491,9 +499,9 @@ function answer(el) {
   bounce(el, 'shake');
   if (q.wrong >= 2) showHint();
   const again = q.mode === 'sound'
-    ? [() => audio.speak(`Who says ${q.target.says}?`), () => audio.playItemSound(q.target)]
-    : [() => audio.speak(askText(mod, q.target))];
-  audio.sequence([() => audio.sfx('oops'), () => audio.speak(thatsText(mod, chosen)), () => audio.wait(150), ...again]);
+    ? [() => audio.speak(say.whoSaysSpoken(q.target)), () => audio.playItemSound(q.target)]
+    : [() => audio.speak(say.ask(mod, q.target))];
+  audio.sequence([() => audio.sfx('oops'), () => audio.speak(say.thats(mod, chosen)), () => audio.wait(150), ...again]);
 }
 
 // ---------- Actions ----------
@@ -502,7 +510,14 @@ const ACTIONS = {
   begin() {
     go('home');
     audio.preload(['xylojingle', 'cheer']);
-    audio.sequence([() => audio.sfx('xylojingle'), () => audio.speak("Hi! Let's learn and play!")]);
+    audio.sequence([() => audio.sfx('xylojingle'), () => audio.speak(t('greeting'))]);
+  },
+  toggleLang() {
+    const next = getLang() === 'en' ? 'hi' : 'en';
+    L.setSetting('lang', next);
+    applyLang(next);
+    go(current.screen, current, 'language switch');
+    if (current.screen !== 'start') audio.sequence([() => audio.speak(t('greeting'))]);
   },
   open(el) {
     go('module', { id: el.dataset.id });
@@ -520,7 +535,7 @@ const ACTIONS = {
     bounce(el);
     burst(...center(el), 16);
     L.recordExposure(it);
-    audio.sequence([() => audio.speak(cap(it.name)), () => audio.playItemSound(it), () => audio.speak(it.phrase)]);
+    audio.sequence([() => audio.speak(nameOf(it)), () => audio.playItemSound(it), () => audio.speak(loc(it, 'phrase'))]);
   },
   async listen() {
     const m = getModule(current.id);
@@ -531,7 +546,7 @@ const ACTIONS = {
       cards[i]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     };
     const steps = m.items.flatMap((it, i) => [
-      () => { spot(i); return audio.speak(cap(it.name)); },
+      () => { spot(i); return audio.speak(nameOf(it)); },
       () => audio.playItemSound(it),
       () => audio.wait(450),
     ]);
@@ -549,17 +564,17 @@ const ACTIONS = {
     go('parent');
   },
   testSound() {
-    audio.sequence([() => audio.speak('The cow says moo!'), () => audio.sfx('cow')]);
+    audio.sequence([() => audio.speak(t('testLine')), () => audio.sfx('cow')]);
   },
   askReset() {
     const wrap = document.createElement('div');
     wrap.className = 'modal';
     wrap.innerHTML = `<div class="modal-card" role="dialog" aria-modal="true">
-      <h3>Reset all progress?</h3>
-      <p class="muted">Stars, mastery and history will be cleared. Settings are kept.</p>
+      <h3>${t('resetQ')}</h3>
+      <p class="muted">${t('resetNote')}</p>
       <div class="modal-actions">
-        <button class="pill-btn" data-action="closeModal">Cancel</button>
-        <button class="pill-btn danger-btn" data-action="doReset">Reset</button>
+        <button class="pill-btn" data-action="closeModal">${t('cancel')}</button>
+        <button class="pill-btn danger-btn" data-action="doReset">${t('reset')}</button>
       </div></div>`;
     app.appendChild(wrap);
   },
@@ -572,13 +587,13 @@ const ACTIONS = {
     const wrap = document.createElement('div');
     wrap.className = 'modal';
     wrap.innerHTML = `<div class="modal-card" role="dialog" aria-modal="true">
-      <h3>🛟 Something went wrong</h3>
-      <p class="muted">Usually it's the sound. <b>Fix it</b> restarts the audio and reloads this screen. Progress is kept.</p>
+      <h3>${t('wentWrong')}</h3>
+      <p class="muted">${t('wentWrongNote')}</p>
       ${problemsHtml(3)}
       <div class="modal-actions wrap">
-        <button class="pill-btn" data-action="copyReport">📋 Copy error report</button>
-        <button class="pill-btn" data-action="closeModal">Close</button>
-        <button class="pill-btn play" data-action="fixIt">🔧 Fix it</button>
+        <button class="pill-btn" data-action="copyReport">${t('copyReport')}</button>
+        <button class="pill-btn" data-action="closeModal">${t('close')}</button>
+        <button class="pill-btn play" data-action="fixIt">${t('fixIt')}</button>
       </div>
       <textarea class="report-text" hidden readonly></textarea>
     </div>`;
@@ -672,9 +687,11 @@ app.addEventListener('change', (e) => {
   const el = e.target.closest('[data-setting]');
   if (!el) return;
   const key = el.dataset.setting;
-  const value = el.type === 'checkbox' ? el.checked : el.type === 'range' ? Number(el.value) : Number(el.value);
+  const raw = el.type === 'checkbox' ? el.checked : el.value;
+  const value = typeof raw === 'string' && raw !== '' && !isNaN(raw) ? Number(raw) : raw;
   L.setSetting(key, value);
   audio.configure(L.getSettings());
+  if (key === 'lang') { applyLang(value); go('parent', {}, 'language setting'); }
 });
 
 app.addEventListener('input', (e) => {

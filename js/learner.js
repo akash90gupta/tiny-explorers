@@ -18,6 +18,8 @@ const START_UNLOCKED = 3;
 const UNLOCK_AT = 0.6;
 
 const DEFAULT_SETTINGS = {
+  // Start in Hindi if the device itself is set to Hindi.
+  lang: /^hi/i.test(navigator.language || '') ? 'hi' : 'en',
   voice: true,
   sounds: true,
   volume: 0.9,

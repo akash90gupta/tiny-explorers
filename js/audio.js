@@ -9,7 +9,6 @@ import { report } from './diagnostics.js';
 
 let ctx = null;
 let out = null;
-let voice = null;
 let seq = 0;
 
 const cfg = { voice: true, sounds: true, volume: 0.9 };
@@ -84,36 +83,55 @@ function halt() {
 
 // ---------- Speech ----------
 
-const VOICE_PREFS = ['Samantha', 'Karen', 'Moira', 'Tessa', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Microsoft Zira'];
+const VOICE_PREFS = {
+  en: ['Samantha', 'Karen', 'Moira', 'Tessa', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Microsoft Zira'],
+  // iPad and Mac ship "Lekha". Chrome has "Google हिन्दी". Windows has Swara or Kalpana.
+  hi: ['Lekha', 'Google हिन्दी', 'Microsoft Swara', 'Microsoft Kalpana', 'Kiyara', 'Neel'],
+};
+const voices = {};
 
-function pickVoice() {
+function pickVoice(lang) {
   if (!('speechSynthesis' in window)) return null;
-  const voices = speechSynthesis.getVoices();
-  for (const name of VOICE_PREFS) {
-    const v = voices.find((x) => x.name.includes(name) && /^en/i.test(x.lang));
+  const all = speechSynthesis.getVoices();
+  const prefix = lang === 'hi' ? /^hi/i : /^en/i;
+  for (const name of VOICE_PREFS[lang] || []) {
+    const v = all.find((x) => x.name.includes(name) && prefix.test(x.lang));
     if (v) return v;
   }
-  return voices.find((v) => /^en[-_]US/i.test(v.lang)) || voices.find((v) => /^en/i.test(v.lang)) || null;
+  if (lang === 'hi') return all.find((v) => /^hi/i.test(v.lang)) || null;
+  return all.find((v) => /^en[-_]US/i.test(v.lang)) || all.find((v) => /^en/i.test(v.lang)) || null;
 }
+
+function voiceFor(lang) {
+  if (!voices[lang]) voices[lang] = pickVoice(lang);
+  return voices[lang];
+}
+
+// True if this device can speak the language (used to warn grown-ups).
+export const hasVoice = (lang) => !!voiceFor(lang);
 
 if ('speechSynthesis' in window) {
-  voice = pickVoice();
-  speechSynthesis.addEventListener?.('voiceschanged', () => { voice = pickVoice(); });
+  speechSynthesis.getVoices();
+  speechSynthesis.addEventListener?.('voiceschanged', () => { for (const k in voices) delete voices[k]; });
 }
 
-export function speak(text, { rate = 0.82, pitch = 1.15 } = {}) {
+let speechLang = 'en';
+export function setSpeechLang(lang) { speechLang = lang; }
+
+export function speak(text, { rate, pitch = 1.15 } = {}) {
   return new Promise((resolve) => {
     if (!cfg.voice || !text || !('speechSynthesis' in window)) return resolve();
     const u = new SpeechSynthesisUtterance(text);
-    if (!voice) voice = pickVoice();
-    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-US'; }
-    u.rate = rate;
-    u.pitch = pitch;
+    const lang = speechLang;
+    const voice = voiceFor(lang);
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = lang === 'hi' ? 'hi-IN' : 'en-US'; }
+    u.rate = rate ?? (lang === 'hi' ? 0.78 : 0.82);
+    u.pitch = lang === 'hi' ? 1.1 : pitch;
     u.volume = Math.min(1, cfg.volume + 0.1);
     if (speechSynthesis.paused) speechSynthesis.resume();
     let done = false;
     // Some browsers never fire onend, so a timeout guarantees we move on.
-    const t = setTimeout(finish, 1500 + text.length * 110);
+    const t = setTimeout(finish, 1500 + text.length * 120);
     function finish() { if (!done) { done = true; clearTimeout(t); resolve(); } }
     u.onend = finish;
     u.onerror = finish;

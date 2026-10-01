@@ -6,7 +6,7 @@
 
 **▶ Play it: [akash90gupta.github.io/tiny-explorers](https://akash90gupta.github.io/tiny-explorers/)**
 
-> Works on an iPad, a phone, or a laptop. No accounts, no ads, no tracking. Add it to the iPad home screen and it runs full screen, even offline.
+> In **English and हिंदी**. Works on an iPad, a phone, or a laptop. No accounts, no ads, no tracking. Add it to the iPad home screen and it runs full screen, even offline.
 
 ---
 
@@ -86,6 +86,7 @@ Three ideas shaped the whole thing.
 
 - **Real sounds** for every animal and vehicle, plus everyday ones: an apple crunch, popcorn popping, a toothbrush, clapping hands. [Credits here.](sounds/CREDITS.md)
 - **A spoken voice** asks every question, so no reading is needed.
+- **English and हिंदी.** One tap on the language button switches every word on screen and the voice that speaks it (Lekha on iPad). The Hindi isn't word-for-word: "गाय कहाँ है?", "इनमें से लाल कौन सा है?", and the sounds kids actually say, like कुत्ता भौं भौं and रेलगाड़ी छुक छुक.
 - **Toddler-proof controls:** huge targets, no pinch-zoom, no long-press menus, and hold-to-go-back.
 - **A grown-ups dashboard** (hold 👪): which words he knows, common mix-ups, recent rounds, and settings such as volume, the number of choices, and round length.
 - **Self-healing:** if a sound gets stuck, the game moves on by itself. If something does break, a clear **🛟 Fix a problem** button appears. It restarts the audio, keeps his progress, and can copy an error report to share.
@@ -98,6 +99,7 @@ Three ideas shaped the whole thing.
 - **iPads pause audio in ways laptops don't.** After a phone call or switching apps, Safari parks the audio engine as "interrupted," and sounds silently stop reporting that they finished. The game froze after a correct answer. Now no step waits forever, and audio wakes up when the app comes back.
 - **Toddlers find the bugs adults don't.** A palm resting on the back button while the screen changed sent the game back on its own. A tap faster than the spoken question cut off the celebration. Both were invisible when I tapped politely.
 - **Guessing has to be priced in.** With 2 pictures, a coin flip is right half the time. Weighting answers by the number of choices kept the engine from "learning" words he was guessing.
+- **Translation is more than swapping words.** Hindi puts the question word at the end ("गाय कहाँ है?"), verbs change with gender (गाय बोलती है, कुत्ता बोलता है), and dogs say भौं भौं, not woof. Each language got its own sentence rules instead of a lookup table.
 - **Kindness is a design choice.** No buzzers, no red X's. Naming what he picked turned every mistake into another word learned.
 
 ---
@@ -122,12 +124,15 @@ js/app.js               screens, game flow, input, and the grown-ups dashboard
 js/learner.js           the learning engine: knowledge tracing, scheduling, unlocks
 js/audio.js             real recordings, speech, the marimba chimes, and hang-proof playback
 js/diagnostics.js       the error log behind the Fix button
+js/i18n.js              English and Hindi: every screen string and sentence rule
 js/modules/*.js         the 10 themes, one file each
 sounds/                 70 trimmed, leveled recordings and their credits
 sw.js                   offline support
 ```
 
-**Add a theme:** copy `js/modules/farm.js`, change the items, add it to `js/modules/index.js`, and drop any new sounds in `sounds/`.
+**Add a theme:** copy `js/modules/farm.js`, change the items (with their `hi` names and phrases), add it to `js/modules/index.js`, and drop any new sounds in `sounds/`.
+
+**Add a language:** add it to `LANGS` and the string tables in `js/i18n.js`, and give each item a block like `hi` in the theme files.
 
 **Debug mode:** add `?debug` to the URL to record which code path caused each screen change in the error report.
 

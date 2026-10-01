@@ -9,7 +9,8 @@
   --radius: 28px;
   --shadow: 0 6px 0 rgba(43, 45, 66, 0.10), 0 14px 28px rgba(43, 45, 66, 0.10);
   --gutter: clamp(12px, 2.5vw, 32px);
-  --font: 'Fredoka', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Baloo 2 covers Devanagari, so Hindi keeps the same rounded, playful look. */
+  --font: 'Fredoka', 'Baloo 2', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --c: #FFC94D;
   --c2: #FF9F1C;
 }
@@ -580,6 +581,40 @@ h1, h2, h3 { margin: 0; font-weight: 700; }
   box-shadow: var(--shadow);
 }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* ---------- Language ---------- */
+
+.lang-btn {
+  padding: 10px 18px;
+  font-family: 'Baloo 2', var(--font);
+  font-weight: 700;
+  color: var(--purple);
+  border: 2px solid rgba(124, 92, 255, 0.25);
+}
+.lang-btn.corner {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top));
+  right: calc(16px + env(safe-area-inset-right));
+  z-index: 2;
+  font-size: 20px;
+}
+.voice-warning {
+  margin: 4px 0 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #FFF4D6;
+  color: #8A4B00;
+  font-size: 15px;
+}
+
+/* Devanagari has taller marks above and below the line: give it room. */
+:lang(hi) body { font-family: 'Baloo 2', 'Fredoka', ui-rounded, system-ui, sans-serif; }
+:lang(hi) .logo { line-height: 1.12; }
+:lang(hi) .tile-title,
+:lang(hi) .item-name,
+:lang(hi) .prompt,
+:lang(hi) .done-title { line-height: 1.3; }
+:lang(hi) .item-name { text-transform: none; }
 
 /* ---------- Problems and recovery ---------- */
 
